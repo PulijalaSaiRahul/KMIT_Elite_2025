@@ -1,0 +1,115 @@
+There are N cities, and M routes[], each route is a path between two cities.
+routes[i] = [city1, city2], there is a travel route between city1 and city2.
+Each city is numbered from 0 to N-1.
+ 
+There are one or more Regions formed among N cities. 
+A Region is formed in such way that you can travel between any two cities 
+in the region that are connected directly and indirectly.
+ 
+Your task is to findout the number of regions formed between N cities. 
+ 
+Input Format:
+-------------
+Line-1: Two space separated integers N and M, number of cities and routes
+Next M lines: Two space separated integers city1, city2.
+ 
+Output Format:
+--------------
+Print an integer, number of regions formed.
+ 
+ 
+Sample Input-1:
+---------------
+5 4
+0 1
+0 2
+1 2
+3 4
+ 
+Sample Output-1:
+----------------
+2
+ 
+ 
+Sample Input-2:
+---------------
+5 6
+0 1
+0 2
+2 3
+1 2
+1 4
+2 4
+ 
+Sample Output-2:
+----------------
+1
+ 
+Note: Look HINT for explanation.
+
+Soluiton
+#include<bits/stdc++.h>
+using namespace std;
+int n;
+vector<int> Rank;
+vector<int> parent;
+int find(int i){
+    if(i==parent[i])
+        return i;
+        
+    return parent[i]=find(parent[i]);
+}
+void Union(int x,int y){
+    int x_parent=find(x);
+    int y_parent=find(y);
+    
+    if(x_parent==y_parent)
+        return;
+        
+    if(Rank[x_parent]>Rank[y_parent])
+        parent[y_parent]=x_parent;
+    else if(Rank[x_parent]<Rank[y_parent])
+        parent[x_parent]=y_parent;
+    else{
+        parent[x_parent]=y_parent;
+        Rank[y_parent]+=1;
+    }
+}
+int solve(vector<vector<int>>& grid){
+    parent.resize(n);
+    Rank.resize(n,0);
+    
+    for(int i=0;i<n;i++)
+        parent[i]=i;
+        
+    for(auto g:grid){
+        int x=find(g[0]);
+        int y=find(g[1]);
+        
+        if(x!=y)
+            Union(g[0],g[1]);
+    }
+    
+    int c=0;
+    for(int i=0;i<n;i++){
+        if(i==parent[i])
+            c++;
+    }
+    
+    return c;
+}
+int main(){
+    int m;
+    cin>>n>>m;
+    
+    vector<vector<int>> grid;
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        
+        grid.push_back({a,b});
+    }
+    
+    cout<<solve(grid);
+    return 0;
+}
